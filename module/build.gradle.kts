@@ -46,10 +46,16 @@ task("assembleMagisk", type = Zip::class) {
     from(zipTree(buildDir.resolve("outputs/apk/release/module-release-unsigned.apk"))) {
         include("assets/**", "lib/arm64-v8a/**", "lib/armeabi-v7a/**")
         eachFile {
-            path = path
-                    .replace("lib/arm64-v8a/", "system/lib64/")
-                    .replace("lib/armeabi-v7a/", "system/lib/")
-                    .replace("assets/", "")
+            path = when {
+                path.startsWith("lib/arm64-v8a/") ->
+                    path.replace("lib/arm64-v8a/", "system/lib64/")
+                path.startsWith("lib/armeabi-v7a/") ->
+                    path.replace("lib/armeabi-v7a/", "system/lib/")
+                path.startsWith("assets/") ->
+                    path.replace("assets/", "")
+                else ->
+                    path
+            }
         }
     }
     from(buildDir.resolve("outputs/jars/boot-riru-launch-blocker.jar")) {
