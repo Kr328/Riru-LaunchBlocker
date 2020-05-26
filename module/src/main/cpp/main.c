@@ -10,11 +10,14 @@ static void load_and_invoke_inject(JNIEnv *env) {
     jclass cDexClassLoader = (*env)->FindClass(env, "dalvik/system/DexClassLoader");
 
     jmethodID mGetSystemClassLoader =
-            (*env)->GetStaticMethodID(env, cClassLoader, "getSystemClassLoader", "()Ljava/lang/ClassLoader;");
+            (*env)->GetStaticMethodID(env, cClassLoader, "getSystemClassLoader",
+                                      "()Ljava/lang/ClassLoader;");
     jmethodID mDexClassLoaderInit =
-            (*env)->GetMethodID(env, cDexClassLoader, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/ClassLoader;)V");
+            (*env)->GetMethodID(env, cDexClassLoader, "<init>",
+                                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/ClassLoader;)V");
     jmethodID mFindClass =
-            (*env)->GetMethodID(env, cClassLoader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+            (*env)->GetMethodID(env, cDexClassLoader, "findClass",
+                                "(Ljava/lang/String;)Ljava/lang/Class;");
 
     jstring sDexPath = (*env)->NewStringUTF(env, "/system/framework/boot-launch-blocker.jar");
     jstring sOdexPath = (*env)->NewStringUTF(env, "/data/dalvik-cache");
@@ -22,10 +25,11 @@ static void load_and_invoke_inject(JNIEnv *env) {
 
     jobject oSystemClassLoader = (*env)->CallStaticObjectMethod(env, cClassLoader,
                                                                 mGetSystemClassLoader);
-    jobject oClassLoader = (*env)->NewObject(env, cDexClassLoader, mDexClassLoaderInit, sDexPath,
-                                             sOdexPath, NULL, oSystemClassLoader);
+    jobject oDexClassLoader = (*env)->NewObject(env, cDexClassLoader, mDexClassLoaderInit, sDexPath,
+                                                sOdexPath, NULL, oSystemClassLoader);
 
-    jclass cInjector = (*env)->CallObjectMethod(env, oClassLoader, mFindClass, sInjectorClass);
+    jclass cInjector = (*env)->CallObjectMethod(env, oDexClassLoader, mFindClass, sInjectorClass);
+
     jmethodID mInject = (*env)->GetStaticMethodID(env, cInjector, "inject", "()V");
 
     (*env)->CallStaticVoidMethod(env, cInjector, mInject);

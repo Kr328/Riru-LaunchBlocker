@@ -8,10 +8,10 @@ android {
 
     defaultConfig {
         applicationId = "com.github.kr328.launchblocker"
-        
+
         minSdkVersion(26)
         targetSdkVersion(29)
-        
+
         versionCode = 1
         versionName = "1.0"
     }
@@ -22,11 +22,16 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    
+
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
         }
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 
@@ -39,7 +44,7 @@ task("assembleJar", type = Jar::class) {
     include("classes.dex")
 
     destinationDirectory.set(buildDir.resolve("outputs/jars"))
-    archiveFileName.set("boot-riru-launch-blocker.jar")
+    archiveFileName.set("boot-launch-blocker.jar")
 }
 
 task("assembleMagisk", type = Zip::class) {
@@ -58,7 +63,7 @@ task("assembleMagisk", type = Zip::class) {
             }
         }
     }
-    from(buildDir.resolve("outputs/jars/boot-riru-launch-blocker.jar")) {
+    from(buildDir.resolve("outputs/jars/boot-launch-blocker.jar")) {
         into("system/framework/")
     }
 

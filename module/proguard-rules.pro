@@ -23,3 +23,5 @@
 -keep final class com.github.kr328.launchblocker.Injector {
     public static void inject();
 }
+
+-dontobfuscate

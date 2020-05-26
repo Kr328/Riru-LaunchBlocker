@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.os.IInterface;
 import android.os.RemoteException;
 
-public interface IActivityManager extends IInterface {
+public interface IActivityTaskManager extends IInterface {
     int startActivity(IApplicationThread caller, String callingPackage,
                       Intent intent, String resolvedType, IBinder resultTo, String resultWho,
                       int requestCode, int flags, ProfilerInfo profilerInfo,
@@ -18,11 +18,11 @@ public interface IActivityManager extends IInterface {
                             int requestCode, int flags, ProfilerInfo profilerInfo,
                             Bundle options, int userId) throws RemoteException;
 
-    abstract class Stub extends Binder implements IActivityManager {
+    abstract class Stub extends Binder implements IActivityTaskManager {
         static final int TRANSACTION_startActivity = 0;
         static final int TRANSACTION_startActivityAsUser = 0;
 
-        public static IActivityManager asInterface(IBinder binder) {
+        public static IActivityTaskManager asInterface(IBinder binder) {
             throw new IllegalArgumentException("Stub!");
         }
 
