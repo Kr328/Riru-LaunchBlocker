@@ -3,4 +3,4 @@ name=Riru - LaunchBlocker
 version=v1.0
 versionCode=10000
 author=Kr328
-description=A module of riru.
+description=A module of riru. Allow user block apps launch other by dialog.
