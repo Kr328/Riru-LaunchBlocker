@@ -9,20 +9,17 @@ import android.content.pm.ResolveInfo;
 import android.os.RemoteException;
 import android.util.Log;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 final class ActivityInterceptor {
-    private static final Set<String> whitelist = new HashSet<>(Arrays.asList("android", "com.android.systemui", "com.android.shell"));
     private static final IPackageManager packageManager = Compat.getPackageManager();
+    private static final Cache<String, Class<Object>> cache = new Cache<>();
 
     static boolean interceptActivity(ActivityRequest request) throws RemoteException {
         String callingPackage = request.getCallingPackage();
         Intent intent = request.getIntent();
 
-        if (whitelist.contains(callingPackage))
+        if (Constants.SOURCE_WHITELIST.contains(callingPackage))
             return false;
         if (intent.hasCategory(Intent.CATEGORY_LAUNCHER))
             return false;
@@ -40,6 +37,17 @@ final class ActivityInterceptor {
 
         ResolveInfo target = activities.get(0);
 
+        if (Constants.TARGET_WHITELIST.contains(target.activityInfo.applicationInfo.packageName))
+            return false;
+
+        String key = generateKey(callingPackage, target);
+
+        Class<Object> o = cache.get(key);
+        if (o != null) {
+            cache.put(key, Object.class, System.currentTimeMillis() + Constants.DEFAULT_ACTION_EXPIRED);
+            return false;
+        }
+
         try {
             Context context = ActivityThread.currentActivityThread().getSystemContext();
 
@@ -55,12 +63,30 @@ final class ActivityInterceptor {
             DialogUtils.popupRequest(
                     sourceLabel,
                     targetLabel,
-                    request::runUpstream,
-                    request::runCancel);
+                    () -> runUpstreamAndSaveState(key, request),
+                    () -> runCancelAndSaveState(key, request));
+
+            Log.d(Constants.TAG, "Intercept " + sourceInfo.packageName + " -> " + targetInfo.packageName);
         } catch (Exception e) {
             Log.w(Constants.TAG, "Query source/target failure", e);
         }
 
         return true;
+    }
+
+    private static void runUpstreamAndSaveState(String key, ActivityRequest request) {
+        request.runUpstream();
+
+        cache.put(key, Object.class, System.currentTimeMillis() + Constants.DEFAULT_ACTION_EXPIRED);
+    }
+
+    private static void runCancelAndSaveState(String key, ActivityRequest request) {
+        request.runCancel();
+
+        cache.remove(key);
+    }
+
+    private static String generateKey(String callingPackage, ResolveInfo target) {
+        return callingPackage + "#" + target.activityInfo.packageName + "#" + target.activityInfo.name;
     }
 }
