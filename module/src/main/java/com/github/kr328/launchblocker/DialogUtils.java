@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Html;
 import android.util.Log;
 import android.view.WindowManager;
 
@@ -16,29 +15,25 @@ final class DialogUtils {
         if (handler == null)
             initialize();
 
-        try {
-            handler.post(() -> {
-                try {
-                    I18n i18n = I18n.getCurrent();
+        handler.post(() -> {
+            try {
+                I18n i18n = I18n.getCurrent();
 
-                    Dialog dialog = new AlertDialog.Builder(ActivityThread.currentActivityThread().getSystemUiContext())
-                            .setTitle(i18n.getText(I18n.TEXT_DIALOG_TITLE))
-                            .setMessage(i18n.getText(I18n.TEXT_DIALOG_CONTENT, source, target))
-                            .setPositiveButton(i18n.getText(I18n.TEXT_DIALOG_ALLOW), (d, w) -> callback.run())
-                            .setNegativeButton(i18n.getText(I18n.TEXT_DIALOG_DENY), (d, w) -> fallback.run())
-                            .setOnCancelListener((d) -> fallback.run())
-                            .create();
+                Dialog dialog = new AlertDialog.Builder(ActivityThread.currentActivityThread().getSystemUiContext())
+                        .setTitle(i18n.getText(I18n.TEXT_DIALOG_TITLE))
+                        .setMessage(i18n.getText(I18n.TEXT_DIALOG_CONTENT, source, target))
+                        .setPositiveButton(i18n.getText(I18n.TEXT_DIALOG_ALLOW), (d, w) -> callback.run())
+                        .setNegativeButton(i18n.getText(I18n.TEXT_DIALOG_DENY), (d, w) -> fallback.run())
+                        .setOnCancelListener((d) -> fallback.run())
+                        .create();
 
-                    dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
+                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
 
-                    dialog.show();
-                } catch (Exception e) {
-                    Log.w(Constants.TAG, "Create dialog failure", e);
-                }
-            });
-        } catch (Exception e) {
-            Log.w(Constants.TAG, "Post failure", e);
-        }
+                dialog.show();
+            } catch (Exception e) {
+                Log.w(Constants.TAG, "Create dialog failure", e);
+            }
+        });
     }
 
     private static void initialize() {
