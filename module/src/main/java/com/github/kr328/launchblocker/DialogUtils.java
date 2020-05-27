@@ -26,7 +26,7 @@ final class DialogUtils {
                             .setMessage(Html.fromHtml(String.format(textProvider.getText(I18n.TEXT_DIALOG_CONTENT).toString(), source, target), Html.FROM_HTML_MODE_COMPACT))
                             .setPositiveButton(textProvider.getText(I18n.TEXT_DIALOG_ALLOW), (d, w) -> callback.run())
                             .setNegativeButton(textProvider.getText(I18n.TEXT_DIALOG_DENY), (d, w) -> fallback.run())
-                            .setCancelable(false)
+                            .setOnCancelListener((d) -> fallback.run())
                             .create();
 
                     dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
