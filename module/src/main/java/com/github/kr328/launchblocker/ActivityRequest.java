@@ -24,7 +24,7 @@ final class ActivityRequest {
         this.cancel = cancel;
     }
 
-    public static ActivityRequest snapshot(String callingPackage, Intent intent, String resolvedType, int userId, BinderCaller upstream, BinderCaller cancel) {
+    static ActivityRequest snapshot(String callingPackage, Intent intent, String resolvedType, int userId, BinderCaller upstream, BinderCaller cancel) {
         return new ActivityRequest(callingPackage, intent, resolvedType, userId, upstream, cancel);
     }
 
@@ -44,7 +44,7 @@ final class ActivityRequest {
         return userId;
     }
 
-    public void runUpstream() {
+    void runUpstream() {
         new Thread(() -> {
             long original = Binder.clearCallingIdentity();
             Binder.restoreCallingIdentity(identify);
@@ -59,7 +59,7 @@ final class ActivityRequest {
         }).start();
     }
 
-    public void runCancel() {
+    void runCancel() {
         new Thread(() -> {
             long original = Binder.clearCallingIdentity();
             Binder.restoreCallingIdentity(identify);

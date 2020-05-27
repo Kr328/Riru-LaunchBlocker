@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import java.util.Collections;
-
 class ActivityProxy extends IActivityManager.Stub {
     private final IActivityManager upstream;
 

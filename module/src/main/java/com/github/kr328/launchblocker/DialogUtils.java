@@ -12,20 +12,20 @@ import android.view.WindowManager;
 final class DialogUtils {
     private static Handler handler;
 
-    public static synchronized void popupRequest(CharSequence source, CharSequence target, Runnable callback, Runnable fallback) {
+    static synchronized void popupRequest(CharSequence source, CharSequence target, Runnable callback, Runnable fallback) {
         if (handler == null)
             initialize();
 
         try {
             handler.post(() -> {
                 try {
-                    I18n.TextProvider textProvider = I18n.getCurrent();
+                    I18n i18n = I18n.getCurrent();
 
                     Dialog dialog = new AlertDialog.Builder(ActivityThread.currentActivityThread().getSystemUiContext())
-                            .setTitle(textProvider.getText(I18n.TEXT_DIALOG_TITLE))
-                            .setMessage(Html.fromHtml(String.format(textProvider.getText(I18n.TEXT_DIALOG_CONTENT).toString(), source, target), Html.FROM_HTML_MODE_COMPACT))
-                            .setPositiveButton(textProvider.getText(I18n.TEXT_DIALOG_ALLOW), (d, w) -> callback.run())
-                            .setNegativeButton(textProvider.getText(I18n.TEXT_DIALOG_DENY), (d, w) -> fallback.run())
+                            .setTitle(i18n.getText(I18n.TEXT_DIALOG_TITLE))
+                            .setMessage(i18n.getText(I18n.TEXT_DIALOG_CONTENT, source, target))
+                            .setPositiveButton(i18n.getText(I18n.TEXT_DIALOG_ALLOW), (d, w) -> callback.run())
+                            .setNegativeButton(i18n.getText(I18n.TEXT_DIALOG_DENY), (d, w) -> fallback.run())
                             .setOnCancelListener((d) -> fallback.run())
                             .create();
 

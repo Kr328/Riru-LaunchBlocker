@@ -11,11 +11,10 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 
 import java.util.Collections;
-import java.util.List;
 
 final class Compat {
     // Compat with Riru-IFWEnhance
-    public static IPackageManager getPackageManager() {
+    static IPackageManager getPackageManager() {
         return IPackageManager.Stub.asInterface(getCommonServicesLocked());
     }
 
@@ -24,8 +23,8 @@ final class Compat {
         return ServiceManager.getService("package");
     }
 
-    public static int scheduleSendResult(IApplicationThread caller, IBinder token, ResultInfo result) throws RemoteException {
-        if ( result.mRequestCode < 0 )
+    static int scheduleSendResult(IApplicationThread caller, IBinder token, ResultInfo result) throws RemoteException {
+        if (result.mRequestCode < 0)
             return 1;
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {

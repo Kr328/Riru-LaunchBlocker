@@ -22,7 +22,7 @@ public class ManagerProxy implements IServiceManager {
         this.callback = callback;
     }
 
-    public static synchronized void install(Callback callback) throws ReflectiveOperationException {
+    static synchronized void install(Callback callback) throws ReflectiveOperationException {
         if (callback == null)
             return;
 

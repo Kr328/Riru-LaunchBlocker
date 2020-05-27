@@ -18,7 +18,7 @@ final class ActivityInterceptor {
     private static final Set<String> whitelist = new HashSet<>(Arrays.asList("android", "com.android.systemui", "com.android.shell"));
     private static final IPackageManager packageManager = Compat.getPackageManager();
 
-    public static boolean interceptActivity(ActivityRequest request) throws RemoteException {
+    static boolean interceptActivity(ActivityRequest request) throws RemoteException {
         String callingPackage = request.getCallingPackage();
         Intent intent = request.getIntent();
 
