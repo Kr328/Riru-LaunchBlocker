@@ -71,6 +71,6 @@ final class ActivityRequest {
             }
 
             Binder.restoreCallingIdentity(original);
-        });
+        }).start();
     }
 }
